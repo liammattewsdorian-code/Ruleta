@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, height=1920">
+<title>El Arepero - Ruleta Tutorial</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gold: #FFD700;
+    --gold2: #FFA500;
+    --red: #C0392B;
+    --red2: #E74C3C;
+    --green: #1B5E20;
+    --green2: #2E7D32;
+    --cream: #FFF8E7;
+    --dark: #1a0a00;
+  }
+
+  body {
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    font-family: 'Fredoka One', cursive;
+    background: #000;
+  }
+
+  /* ===================== SCENE SYSTEM ===================== */
+  .scene {
+    position: absolute;
+    width: 1080px;
+    height: 1920px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+  .scene.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ===================== SHARED BG ===================== */
+  .bg-sunset {
+    background: radial-gradient(ellipse at 50% 30%, #FF6B35 0%, #C0392B 30%, #7B1D1D 55%, #2C0A0A 80%, #0D0208 100%);
+  }
+  .bg-dark-gold {
+    background: radial-gradient(ellipse at 50% 20%, #3D2B00 0%, #1A0E00 40%, #0A0500 100%);
+  }
+
+  .stars {
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,215,0,0.8) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 25% 8%, rgba(255,255,255,0.9) 0%, transparent 100%),
+      radial-gradient(1px 1px at 40% 20%, rgba(255,200,0,0.7) 0%, transparent 100%),
+      radial-gradient(2px 2px at 60% 5%, rgba(255,255,255,0.8) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 18%, rgba(255,215,0,0.9) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 85% 12%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 35%, rgba(255,200,100,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 30%, rgba(255,215,0,0.7) 0%, transparent 100%),
+      radial-gradient(2px 2px at 50% 40%, rgba(255,255,200,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 5% 50%, rgba(255,215,0,0.6) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 95% 45%, rgba(255,255,255,0.5) 0%, transparent 100%);
+  }
+
+  /* ===================== PALMS ===================== */
+  .palms {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 600px;
+    pointer-events: none;
+  }
+  .palm {
+    position: absolute;
+    bottom: 0;
+  }
+  .palm-trunk {
+    width: 28px;
+    background: linear-gradient(to right, #3D2B1F, #6B4226, #3D2B1F);
+    border-radius: 14px;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .palm-leaves {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+  }
+  .palm-leaf {
+    position: absolute;
+    width: 180px;
+    height: 35px;
+    background: linear-gradient(to right, #1B5E20, #2E7D32, #388E3C);
+    border-radius: 50% 50% 50% 0;
+    transform-origin: left center;
+  }
+
+  /* ===================== LOGO BAR ===================== */
+  .logo-bar {
+    position: absolute;
+    top: 60px; left: 60px;
+    display: flex; align-items: center; gap: 20px;
+    z-index: 100;
+  }
+  .logo-circle {
+    width: 120px; height: 120px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    border-radius: 50%;
+    border: 5px solid #fff;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 30px rgba(255,215,0,0.8);
+    overflow: hidden;
+  }
+  .logo-text-block { color: #fff; }
+  .logo-name {
+    font-family: 'Bangers', cursive;
+    font-size: 52px;
+    letter-spacing: 2px;
+    line-height: 1;
+    text-shadow: 3px 3px 0 #C0392B;
+  }
+  .logo-sub {
+    font-size: 18px;
+    color: #FFD700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+  }
+  .badge-5star {
+    position: absolute;
+    top: 60px; right: 60px;
+    width: 130px; height: 130px;
+    background: radial-gradient(circle, #1a1a1a, #000);
+    border: 4px solid #FFD700;
+    border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    box-shadow: 0 0 30px rgba(255,215,0,0.6), inset 0 0 20px rgba(255,215,0,0.1);
+    z-index: 100;
+  }
+  .badge-stars { color: #FFD700; font-size: 18px; }
+  .badge-num { font-family: 'Bangers'; font-size: 42px; color: #FFD700; line-height: 1; }
+  .badge-label { font-size: 13px; color: #FFD700; font-family: 'Nunito'; font-weight: 900; letter-spacing: 2px; }
+
+  /* ===================== MASCOT SVG ===================== */
+  .mascot-container {
+    position: absolute;
+    animation: mascotFloat 3s ease-in-out infinite;
+  }
+  @keyframes mascotFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+
+  /* Built-in mascot using CSS/SVG */
+  .mascot-svg {
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.6));
+  }
+
+  /* ===================== ROULETTE ===================== */
+  .roulette-container {
+    position: absolute;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .roulette-outer {
+    border-radius: 50%;
+    background: linear-gradient(135deg, #B8860B, #FFD700, #B8860B, #FFD700);
+    box-shadow: 0 0 60px rgba(255,215,0,0.8), 0 0 120px rgba(255,165,0,0.4), inset 0 0 30px rgba(0,0,0,0.3);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .roulette-inner {
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+  }
+  .roulette-spin {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    position: relative;
+  }
+  .roulette-pointer {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 50px solid #FF0000;
+    filter: drop-shadow(0 5px 10px rgba(255,0,0,0.8));
+    z-index: 10;
+  }
+  .roulette-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, #FFD700, #B8860B);
+    border-radius: 50%;
+    border: 5px solid #fff;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    z-index: 10;
+    box-shadow: 0 0 20px rgba(255,215,0,0.8);
+  }
+  .roulette-center-text {
+    font-family: 'Bangers', cursive;
+    font-size: 18px;
+    color: #1B0000;
+    line-height: 1.1;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+  }
+  .roulette-segment-label {
+    position: absolute;
+    font-family: 'Fredoka One', cursive;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    text-align: center;
+    transform-origin: center center;
+    pointer-events: none;
+  }
+
+  /* ===================== STEP INDICATORS ===================== */
+  .step-circle {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bangers', cursive;
+    font-size: 42px;
+    color: #1B0000;
+    box-shadow: 0 5px 20px rgba(255,165,0,0.6);
+    border: 4px solid #fff;
+    flex-shrink: 0;
+  }
+
+  /* ===================== COINS ===================== */
+  .coin {
+    position: absolute;
+    width: 50px; height: 50px;
+    background: radial-gradient(circle at 35% 35%, #FFF5A0, #FFD700 40%, #B8860B);
+    border-radius: 50%;
+    border: 3px solid #B8860B;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+    animation: coinFly 2s ease-in-out infinite;
+  }
+  @keyframes coinFly {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(-300px) rotate(720deg); opacity: 0; }
+  }
+  @keyframes coinPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+
+  /* ===================== SPARKLES ===================== */
+  .sparkle {
+    position: absolute;
+    width: 20px; height: 20px;
+    animation: sparkleAnim 1.5s ease-in-out infinite;
+  }
+  .sparkle::before, .sparkle::after {
+    content: '✦';
+    position: absolute;
+    color: #FFD700;
+    font-size: 24px;
+    animation: sparkleAnim 1.5s ease-in-out infinite;
+  }
+  @keyframes sparkleAnim {
+    0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    50% { opacity: 0.5; transform: scale(1.5) rotate(180deg); }
+  }
+
+  /* ===================== BUTTONS ===================== */
+  .btn-play {
+    background: linear-gradient(135deg, #FF6B35, #FFD700, #FF6B35);
+    background-size: 200% 100%;
+    border: none;
+    border-radius: 60px;
+    padding: 30px 60px;
+    font-family: 'Bangers', cursive;
+    font-size: 52px;
+    color: #1B0000;
+    letter-spacing: 2px;
+    cursor: pointer;
+    box-shadow: 0 10px 40px rgba(255,165,0,0.6), 0 0 0 5px rgba(255,215,0,0.3);
+    animation: btnPulse 2s ease-in-out infinite, btnShine 3s linear infinite;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+  }
+  @keyframes btnPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 10px 40px rgba(255,165,0,0.6); }
+    50% { transform: scale(1.05); box-shadow: 0 15px 60px rgba(255,165,0,0.9), 0 0 40px rgba(255,215,0,0.5); }
+  }
+  @keyframes btnShine {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .btn-green {
+    background: linear-gradient(135deg, #1B5E20, #2E7D32, #1B5E20);
+    border: 4px solid #FFD700;
+    border-radius: 60px;
+    padding: 28px 55px;
+    font-family: 'Bangers', cursive;
+    font-size: 44px;
+    color: #FFD700;
+    letter-spacing: 2px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    display: inline-block;
+    text-align: center;
+  }
+
+  /* ===================== TITLE TEXT ===================== */
+  .main-title {
+    font-family: 'Bangers', cursive;
+    font-size: 80px;
+    color: #FFD700;
+    text-align: center;
+    line-height: 1;
+    text-shadow: 4px 4px 0 #C0392B, 8px 8px 20px rgba(0,0,0,0.8);
+    letter-spacing: 3px;
+  }
+  .sub-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 42px;
+    color: #fff;
+    text-align: center;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+  }
+  .accent-text {
+    color: #FFD700;
+    font-family: 'Bangers', cursive;
+    font-size: 56px;
+    text-shadow: 3px 3px 0 #C0392B;
+  }
+
+  /* ===================== PRIZE BOX ===================== */
+  .prize-box {
+    background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,165,0,0.1));
+    border: 3px solid rgba(255,215,0,0.6);
+    border-radius: 30px;
+    padding: 30px 40px;
+    backdrop-filter: blur(5px);
+    position: relative;
+    overflow: hidden;
+  }
+  .prize-box::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(255,215,0,0.05), transparent);
+    animation: shimmer 3s linear infinite;
+  }
+  @keyframes shimmer {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(200%) rotate(45deg); }
+  }
+
+  /* ===================== WINNER BANNER ===================== */
+  .winner-banner {
+    background: linear-gradient(135deg, #C0392B, #E74C3C);
+    border: 5px solid #FFD700;
+    border-radius: 20px;
+    padding: 25px 50px;
+    font-family: 'Bangers', cursive;
+    font-size: 72px;
+    color: #FFD700;
+    text-align: center;
+    letter-spacing: 3px;
+    text-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+    box-shadow: 0 10px 50px rgba(192,57,43,0.8), 0 0 100px rgba(255,215,0,0.3);
+    animation: bannerPulse 1s ease-in-out infinite;
+  }
+  @keyframes bannerPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+  }
+
+  /* ===================== INSTRUCTION CARD ===================== */
+  .instruction-card {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    background: rgba(0,0,0,0.5);
+    border: 3px solid rgba(255,215,0,0.4);
+    border-radius: 25px;
+    padding: 28px 35px;
+    backdrop-filter: blur(10px);
+  }
+  .instruction-text {
+    font-family: 'Fredoka One', cursive;
+    font-size: 34px;
+    color: #fff;
+    line-height: 1.3;
+  }
+  .instruction-emoji {
+    font-size: 52px;
+    flex-shrink: 0;
+  }
+
+  /* ===================== PHONE MOCKUP ===================== */
+  .phone-mockup {
+    width: 320px;
+    height: 640px;
+    background: #1a1a2e;
+    border-radius: 40px;
+    border: 8px solid #333;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.8), inset 0 0 30px rgba(255,255,255,0.05);
+    overflow: hidden;
+    position: relative;
+  }
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, #FFF8E7, #F5ECD0);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    gap: 12px;
+  }
+  .phone-url-bar {
+    width: 90%;
+    background: #fff;
+    border-radius: 20px;
+    padding: 8px 15px;
+    font-size: 13px;
+    color: #666;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+  .phone-btn-play {
+    background: linear-gradient(135deg, #FF6B35, #FFD700);
+    border-radius: 30px;
+    padding: 14px 25px;
+    font-family: 'Bangers', cursive;
+    font-size: 22px;
+    color: #1B0000;
+    text-align: center;
+    animation: btnPulse 2s ease-in-out infinite;
+    width: 90%;
+    box-shadow: 0 5px 20px rgba(255,165,0,0.5);
+  }
+  .phone-arepa-img {
+    font-size: 80px;
+    text-align: center;
+  }
+  .phone-logo-text {
+    font-family: 'Bangers', cursive;
+    font-size: 36px;
+    color: #C0392B;
+    text-shadow: 2px 2px 0 #FFD700;
+  }
+
+  /* ===================== CURSOR ===================== */
+  .cursor {
+    position: absolute;
+    width: 40px; height: 40px;
+    background: rgba(255,215,0,0.9);
+    border: 3px solid #fff;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    z-index: 200;
+    animation: cursorClick 0.5s ease-in-out infinite alternate;
+  }
+  @keyframes cursorClick {
+    0% { transform: rotate(-45deg) scale(1); }
+    100% { transform: rotate(-45deg) scale(0.8); }
+  }
+
+  /* ===================== CONFETTI ===================== */
+  .confetti-piece {
+    position: absolute;
+    width: 15px; height: 25px;
+    opacity: 0;
+    animation: confettiDrop linear infinite;
+  }
+  @keyframes confettiDrop {
+    0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(2000px) rotate(720deg); opacity: 0.3; }
+  }
+
+  /* ===================== PROGRESS BAR ===================== */
+  .progress-bar-container {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 12px;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(to right, #FFD700, #FF6B35);
+    transition: width 0.1s linear;
+    box-shadow: 0 0 20px rgba(255,215,0,0.8);
+  }
+
+  /* ===================== SCENE TRANSITIONS ===================== */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(60px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes zoomIn {
+    from { opacity: 0; transform: scale(0.6); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-100px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(100px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .animate-fadeup { animation: fadeInUp 0.8s ease forwards; }
+  .animate-zoom { animation: zoomIn 0.8s ease forwards; }
+  .animate-left { animation: slideInLeft 0.8s ease forwards; }
+  .animate-right { animation: slideInRight 0.8s ease forwards; }
+  .delay-1 { animation-delay: 0.3s; opacity: 0; }
+  .delay-2 { animation-delay: 0.6s; opacity: 0; }
+  .delay-3 { animation-delay: 0.9s; opacity: 0; }
+  .delay-4 { animation-delay: 1.2s; opacity: 0; }
+
+  /* ===================== INSTAGRAM OVERLAY ===================== */
+  .ig-action {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(255,255,255,0.12);
+    border: 3px solid rgba(255,255,255,0.4);
+    border-radius: 20px;
+    padding: 22px 30px;
+    backdrop-filter: blur(8px);
+  }
+  .ig-icon {
+    width: 70px; height: 70px;
+    background: linear-gradient(135deg, #F58529, #DD2A7B, #8134AF);
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 38px;
+    flex-shrink: 0;
+  }
+  .ig-text { font-family: 'Fredoka One'; font-size: 30px; color: #fff; }
+  .ig-text span { color: #FFD700; }
+
+  /* ===================== GOLD TEXT ANIM ===================== */
+  @keyframes goldShimmer {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+  }
+  .gold-shimmer {
+    background: linear-gradient(90deg, #FFD700, #FFF5A0, #FFD700, #B8860B, #FFD700);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: goldShimmer 3s linear infinite;
+  }
+
+  @keyframes spinRoulette {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(1440deg); }
+  }
+  .spinning { animation: spinRoulette 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+
+  /* ===================== FIRE EFFECT ===================== */
+  @keyframes fireGlow {
+    0%, 100% { box-shadow: 0 0 30px #FF6B35, 0 0 60px #FF4500, 0 0 100px #C0392B; }
+    50% { box-shadow: 0 0 50px #FFD700, 0 0 100px #FF6B35, 0 0 150px #FF4500; }
+  }
+
+  .scene-nav {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 15px;
+    z-index: 1000;
+  }
+  .nav-dot {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    border: 2px solid rgba(255,215,0,0.5);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .nav-dot.active {
+    background: #FFD700;
+    box-shadow: 0 0 10px rgba(255,215,0,0.8);
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== SCENE 0: INTRO ==================== -->
+<div class="scene active bg-sunset" id="scene-0">
+  <div class="stars"></div>
+
+  <!-- Palms -->
+  <div class="palms">
+    <div class="palm" style="left:40px; bottom:0;">
+      <div class="palm-trunk" style="width:35px;height:500px;transform:rotate(-15deg);transform-origin:bottom center;"></div>
+      <div class="palm-leaves" style="bottom:480px;left:20px;">
+        <div class="palm-leaf" style="transform:rotate(-60deg);"></div>
+        <div class="palm-leaf" style="transform:rotate(-20deg);background:linear-gradient(to right,#2E7D32,#43A047);"></div>
+        <div class="palm-leaf" style="transform:rotate(20deg);"></div>
+        <div class="palm-leaf" style="transform:rotate(60deg);background:linear-gradient(to right,#1B5E20,#2E7D32);"></div>
+      </div>
+    </div>
+    <div class="palm" style="right:40px; bottom:0;">
+      <div class="palm-trunk" style="width:35px;height:450px;transform:rotate(15deg);transform-origin:bottom center;"></div>
+      <div class="palm-leaves" style="bottom:430px;right:20px;">
+        <div class="palm-leaf" style="transform:rotate(-60deg) scaleX(-1);"></div>
+        <div class="palm-leaf" style="transform:rotate(-20deg) scaleX(-1);background:linear-gradient(to right,#388E3C,#43A047);"></div>
+        <div class="palm-leaf" style="transform:rotate(20deg) scaleX(-1);"></div>
+        <div class="palm-leaf" style="transform:rotate(60deg) scaleX(-1);background:linear-gradient(to right,#1B5E20,#2E7D32);"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logo -->
+  <div class="logo-bar animate-left">
+    <div class="logo-circle">
+      <svg width="100" height="100" viewBox="0 0 100 100">
+        <!-- Arepa body -->
+        <ellipse cx="50" cy="55" rx="42" ry="30" fill="#D4A447"/>
+        <ellipse cx="50" cy="50" rx="42" ry="30" fill="#E8B860"/>
+        <ellipse cx="50" cy="47" rx="40" ry="27" fill="#F5C878"/>
+        <!-- Filling -->
+        <ellipse cx="50" cy="43" rx="32" ry="18" fill="#8B4513"/>
+        <ellipse cx="42" cy="41" rx="8" ry="5" fill="#90EE90"/>
+        <ellipse cx="56" cy="40" rx="6" ry="4" fill="#90EE90"/>
+        <!-- Face -->
+        <circle cx="38" cy="36" r="6" fill="#fff"/>
+        <circle cx="62" cy="36" r="6" fill="#fff"/>
+        <circle cx="39" cy="37" r="3.5" fill="#1a1a1a"/>
+        <circle cx="63" cy="37" r="3.5" fill="#1a1a1a"/>
+        <circle cx="40" cy="36" r="1.5" fill="#fff"/>
+        <circle cx="64" cy="36" r="1.5" fill="#fff"/>
+        <!-- Mustache -->
+        <path d="M40 44 Q50 50 60 44" stroke="#4a2c00" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M40 44 Q35 48 32 44" stroke="#4a2c00" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M60 44 Q65 48 68 44" stroke="#4a2c00" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="logo-text-block">
+      <div class="logo-name">El Arepero</div>
+      <div class="logo-sub">Auténticas Arepas Venezolanas</div>
+    </div>
+  </div>
+
+  <!-- Badge -->
+  <div class="badge-5star animate-right">
+    <div class="badge-stars">⭐⭐⭐⭐⭐</div>
+    <div class="badge-num">5</div>
+    <div class="badge-label">ESTRELLAS</div>
+  </div>
+
+  <!-- Main content -->
+  <div style="position:absolute; top:230px; left:0; right:0; display:flex; flex-direction:column; align-items:center; gap:30px; padding:0 60px;">
+
+    <!-- PRE-LANZAMIENTO -->
+    <div class="animate-fadeup delay-1" style="background:linear-gradient(135deg,rgba(192,57,43,0.9),rgba(231,76,60,0.9)); border:4px solid #FFD700; border-radius:20px; padding:20px 50px; text-align:center; box-shadow:0 0 50px rgba(192,57,43,0.6);">
+      <div style="font-family:'Bangers',cursive; font-size:38px; color:#FFD700; letter-spacing:4px;">🎉 PRE-LANZAMIENTO ESPECTACULAR 🎉</div>
+    </div>
+
+    <!-- Title -->
+    <div class="animate-fadeup delay-2">
+      <div class="main-title">¡LA REINA LLEGÓ<br>A UVERO ALTO!</div>
+    </div>
+
+    <!-- Mascot large -->
+    <div class="mascot-container animate-zoom delay-2" style="position:relative; width:380px; height:380px;">
+      <svg width="380" height="380" viewBox="0 0 380 380" class="mascot-svg">
+        <!-- Chef apron/body -->
+        <ellipse cx="190" cy="240" rx="100" ry="80" fill="#f0f0f0"/>
+        <rect x="140" y="210" width="100" height="120" rx="20" fill="#f0f0f0"/>
+        <!-- Apron details -->
+        <rect x="160" y="215" width="60" height="100" rx="10" fill="#e8e8e8"/>
+        <circle cx="190" cy="230" r="6" fill="#ccc"/>
+        <circle cx="190" cy="250" r="6" fill="#ccc"/>
+        <!-- Arepa body -->
+        <ellipse cx="190" cy="160" rx="130" ry="110" fill="#E8B860"/>
+        <ellipse cx="190" cy="155" rx="128" ry="108" fill="#F5C878"/>
+        <ellipse cx="190" cy="150" rx="124" ry="104" fill="#FAD78A"/>
+        <!-- Spots/texture -->
+        <circle cx="140" cy="120" r="15" fill="rgba(180,120,30,0.3)"/>
+        <circle cx="230" cy="100" r="10" fill="rgba(180,120,30,0.25)"/>
+        <circle cx="165" cy="175" r="12" fill="rgba(180,120,30,0.2)"/>
+        <!-- Filling visible -->
+        <ellipse cx="190" cy="142" rx="90" ry="55" fill="#8B4513"/>
+        <ellipse cx="175" cy="138" rx="22" ry="14" fill="#228B22"/>
+        <ellipse cx="205" cy="136" rx="18" ry="12" fill="#228B22"/>
+        <ellipse cx="188" cy="148" rx="28" ry="10" fill="#6B3410"/>
+        <!-- Eyes -->
+        <circle cx="155" cy="110" r="22" fill="#fff" stroke="#333" stroke-width="3"/>
+        <circle cx="225" cy="110" r="22" fill="#fff" stroke="#333" stroke-width="3"/>
+        <circle cx="158" cy="113" r="13" fill="#1a1a1a"/>
+        <circle cx="228" cy="113" r="13" fill="#1a1a1a"/>
+        <circle cx="162" cy="108" r="6" fill="#fff"/>
+        <circle cx="232" cy="108" r="6" fill="#fff"/>
+        <circle cx="165" cy="105" r="3" fill="#fff"/>
+        <circle cx="235" cy="105" r="3" fill="#fff"/>
+        <!-- Cheeks -->
+        <circle cx="138" cy="135" r="15" fill="rgba(255,150,150,0.4)"/>
+        <circle cx="242" cy="135" r="15" fill="rgba(255,150,150,0.4)"/>
+        <!-- Smile -->
+        <path d="M165 148 Q190 170 215 148" stroke="#333" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <!-- Mustache -->
+        <path d="M158 142 Q190 158 222 142" stroke="#3D1C00" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <path d="M158 142 Q148 155 138 142" stroke="#3D1C00" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+        <path d="M222 142 Q232 155 242 142" stroke="#3D1C00" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+        <!-- Left arm with spatula -->
+        <ellipse cx="75" cy="230" rx="28" ry="80" fill="#FAD78A" transform="rotate(-20 75 230)"/>
+        <!-- Spatula -->
+        <rect x="20" y="140" width="16" height="90" rx="8" fill="#555"/>
+        <rect x="5" y="110" width="46" height="50" rx="8" fill="#888"/>
+        <rect x="9" y="115" width="8" height="40" fill="#777" rx="2"/>
+        <rect x="20" y="115" width="8" height="40" fill="#777" rx="2"/>
+        <rect x="31" y="115" width="8" height="40" fill="#777" rx="2"/>
+        <!-- Right arm thumbs up -->
+        <ellipse cx="305" cy="235" rx="28" ry="75" fill="#FAD78A" transform="rotate(20 305 235)"/>
+        <!-- Thumb -->
+        <ellipse cx="330" cy="200" rx="18" ry="28" fill="#FAD78A" transform="rotate(-10 330 200)"/>
+        <ellipse cx="342" cy="198" rx="15" ry="20" fill="#FAD78A" transform="rotate(5 342 198)"/>
+        <!-- Gloves white -->
+        <ellipse cx="68" cy="200" rx="32" ry="28" fill="#fff"/>
+        <ellipse cx="315" cy="195" rx="32" ry="28" fill="#fff"/>
+        <!-- Banner -->
+        <rect x="50" y="330" width="280" height="65" rx="10" fill="#C0392B"/>
+        <rect x="45" y="327" width="290" height="70" rx="12" fill="none" stroke="#FFD700" stroke-width="4"/>
+        <text x="190" y="350" text-anchor="middle" font-family="Bangers,cursive" font-size="22" fill="#FFD700" letter-spacing="1">EL</text>
+        <text x="190" y="385" text-anchor="middle" font-family="Bangers,cursive" font-size="38" fill="#fff" letter-spacing="2">AREPERO</text>
+      </svg>
+    </div>
+
+    <!-- Roulette mini preview + CTA -->
+    <div class="animate-fadeup delay-3" style="text-align:center;">
+      <div style="font-family:'Fredoka One',cursive; font-size:38px; color:#fff; text-shadow:2px 2px 10px rgba(0,0,0,0.8); margin-bottom:20px;">
+        ¡Aprende cómo <span class="accent-text">GANAR PREMIOS</span><br>en nuestra ruleta!
+      </div>
+    </div>
+
+    <!-- CTA Button -->
+    <div class="animate-fadeup delay-4">
+      <div class="btn-play" onclick="nextScene()">
+        🎰 ¡VER CÓMO GANAR!
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Floating coins -->
+  <div class="coin" style="left:80px; top:1200px; animation-duration:3s; animation-delay:0s;"></div>
+  <div class="coin" style="left:200px; top:1400px; animation-duration:2.5s; animation-delay:0.8s;"></div>
+  <div class="coin" style="right:100px; top:1300px; animation-duration:3.5s; animation-delay:0.3s;"></div>
+  <div class="coin" style="right:200px; top:1500px; animation-duration:2s; animation-delay:1.2s;"></div>
+</div>
+
+
+<!-- ==================== SCENE 1: STEP 1 - GO TO WEB ==================== -->
+<div class="scene bg-dark-gold" id="scene-1">
+  <div class="stars"></div>
+
+  <div style="position:absolute; top:0; left:0; right:0; height:6px; background:linear-gradient(to right,#FFD700,#FF6B35,#FFD700);"></div>
+
+  <!-- Logo top -->
+  <div style="position:absolute; top:50px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:15px;">
+    <div style="font-family:'Bangers',cursive; font-size:42px; color:#FFD700; text-shadow:2px 2px 0 #C0392B;">🍞 EL AREPERO</div>
+  </div>
+
+  <!-- Step indicator -->
+  <div style="position:absolute; top:140px; left:60px; right:60px; display:flex; align-items:center; gap:20px;" class="animate-left">
+    <div class="step-circle">1</div>
+    <div>
+      <div style="font-family:'Bangers',cursive; font-size:52px; color:#FFD700; line-height:1;">PRIMER PASO</div>
+      <div style="font-family:'Fredoka One',cursive; font-size:28px; color:#fff; opacity:0.9;">Entra a nuestra página web</div>
+    </div>
+  </div>
+
+  <!-- Phone mockup centered -->
+  <div style="position:absolute; top:280px; left:50%; transform:translateX(-50%);" class="animate-zoom delay-1">
+    <div class="phone-mockup">
+      <div class="phone-screen">
+        <div class="phone-url-bar">🔒 elarepero.com</div>
+        <div class="phone-logo-text">EL AREPERO</div>
+        <div style="font-family:'Fredoka One',cursive; font-size:14px; color:#C0392B; text-align:center; font-weight:700;">AUTÉNTICAS AREPAS VENEZOLANAS</div>
+        <div class="phone-arepa-img">🫓</div>
+        <div style="font-family:'Fredoka One',cursive; font-size:14px; color:#666; text-align:center; padding:0 10px; line-height:1.4;">
+          El sabor de Venezuela te espera 24/7 en Uvero Alto
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px; width:90%;">
+          <div style="background:#fff; border-radius:20px; padding:10px 15px; display:flex; align-items:center; gap:8px; font-family:'Fredoka One'; font-size:14px; color:#2E7D32; border:2px solid #ddd;">
+            🕐 Abierto 24/7
+          </div>
+          <div style="background:#fff; border-radius:20px; padding:10px 15px; display:flex; align-items:center; gap:8px; font-family:'Fredoka One'; font-size:14px; color:#2E7D32; border:2px solid #ddd;">
+            🛵 Delivery Uvero Alto
+          </div>
+          <div style="background:#fff; border-radius:20px; padding:10px 15px; display:flex; align-items:center; gap:8px; font-family:'Fredoka One'; font-size:14px; color:#2E7D32; border:2px solid #ddd;">
+            ⭐ 5 Estrellas
+          </div>
+        </div>
+        <!-- THE BUTTON -->
+        <div class="phone-btn-play" style="position:relative;">
+          <div style="font-size:16px;">🎰 ¡JUGAR RULETA!</div>
+          <div style="font-size:11px; color:rgba(0,0,0,0.6);">GRAN APERTURA 30 DE MARZO</div>
+        </div>
+      </div>
+    </div>
+    <!-- Cursor clicking -->
+    <div class="cursor" style="bottom:95px; right:20px;"></div>
+  </div>
+
+  <!-- Instructions -->
+  <div style="position:absolute; bottom:250px; left:60px; right:60px; display:flex; flex-direction:column; gap:20px;" class="animate-fadeup delay-2">
+    <div class="instruction-card">
+      <div class="instruction-emoji">🌐</div>
+      <div class="instruction-text">Ve a <strong style="color:#FFD700;">elarepero.com</strong> desde tu celular o computadora</div>
+    </div>
+    <div class="instruction-card">
+      <div class="instruction-emoji">👆</div>
+      <div class="instruction-text">Presiona el botón <strong style="color:#FFD700;">¡JUGAR RULETA!</strong> que aparece en la página</div>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div style="position:absolute; bottom:60px; left:60px; right:60px; display:flex; justify-content:space-between; align-items:center;">
+    <div onclick="prevScene()" style="font-family:'Fredoka One',cursive; font-size:28px; color:rgba(255,215,0,0.6); cursor:pointer;">← Volver</div>
+    <div style="font-family:'Fredoka One',cursive; font-size:24px; color:rgba(255,255,255,0.5);">Paso 1 de 4</div>
+    <div onclick="nextScene()" class="btn-green" style="font-size:32px; padding:18px 35px;">Siguiente →</div>
+  </div>
+</div>
+
+
+<!-- ==================== SCENE 2: STEP 2 - MISSIONS ==================== -->
+<div class="scene bg-sunset" id="scene-2">
+  <div class="stars"></div>
+
+  <div style="position:absolute; top:0; left:0; right:0; height:6px; background:linear-gradient(to right,#FFD700,#FF6B35,#FFD700);"></div>
+
+  <!-- Logo top -->
+  <div style="position:absolute; top:50px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:15px;">
+    <div style="font-family:'Bangers',cursive; font-size:42px; color:#FFD700; text-shadow:2px 2px 0 #C0392B;">🍞 EL AREPERO</div>
+  </div>
+
+  <!-- Step indicator -->
+  <div style="position:absolute; top:140px; left:60px; right:60px; display:flex; align-items:center; gap:20px;" class="animate-right">
+    <div class="step-circle">2</div>
+    <div>
+      <div style="font-family:'Bangers',cursive; font-size:52px; color:#FFD700; line-height:1;">COMPLETA MISIONES</div>
+      <div style="font-family:'Fredoka One',cursive; font-size:28px; color:#fff; opacity:0.9;">¡Gana giros en la ruleta!</div>
+    </div>
+  </div>
+
+  <!-- Missions list -->
+  <div style="position:absolute; top:280px; left:60px; right:60px; display:flex; flex-direction:column; gap:25px;">
+
+    <!-- Mission 1 -->
+    <div class="prize-box animate-fadeup delay-1" style="display:flex; align-items:center; gap:25px;">
+      <div class="ig-icon" style="width:80px;height:80px;font-size:45px;">📸</div>
+      <div style="flex:1;">
+        <div style="font-family:'Bangers',cursive; font-size:36px; color:#FFD700; line-height:1;">SÍGUENOS EN INSTAGRAM</div>
+        <div style="font-family:'Fredoka One',cursive; font-size:24px; color:#fff; opacity:0.9;">@elarepero_uveroalto</div>
+      </div>
+      <div style="font-family:'Bangers',cursive; font-size:48px; color:#FFD700;">+1<br><span style="font-size:24px;">GIRO</span></div>
+    </div>
+
+    <!-- Mission 2 -->
+    <div class="prize-box animate-fadeup delay-2" style="display:flex; align-items:center; gap:25px;">
+      <div style="width:80px;height:80px;background:linear-gradient(135deg,#4285F4,#34A853,#FBBC05,#EA4335);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:45px;flex-shrink:0;">⭐</div>
+      <div style="flex:1;">
+        <div style="font-family:'Bangers',cursive; font-size:36px; color:#FFD700; line-height:1;">RESEÑA EN GOOGLE MAPS</div>
+        <div style="font-family:'Fredoka One',cursive; font-size:24px; color:#fff; opacity:0.9;">Deja tu opinión de 5 estrellas</div>
+      </div>
+      <div style="font-family:'Bangers',cursive; font-size:48px; color:#FFD700;">+1<br><span style="font-size:24px;">GIRO</span></div>
+    </div>
+
+    <!-- Mission 3 -->
+    <div class="prize-box animate-fadeup delay-3" style="display:flex; align-items:center; gap:25px;">
+      <div style="width:80px;height:80px;background:linear-gradient(135deg,#25D366,#128C7E);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:45px;flex-shrink:0;">💬</div>
+      <div style="flex:1;">
+        <div style="font-family:'Bangers',cursive; font-size:36px; color:#FFD700; line-height:1;">COMPARTE EN WHATSAPP</div>
+        <div style="font-family:'Fredoka One',cursive; font-size:24px; color:#fff; opacity:0.9;">Envía el link a 3 amigos</div>
+      </div>
+      <div style="font-family:'Bangers',cursive; font-size:48px; color:#FFD700;">+1<br><span style="font-size:24px;">GIRO</span></div>
+    </div>
+
+    <!-- Coins visual -->
+    <div class="animate-zoom delay-4" style="text-align:center; position:relative;">
+      <div style="display:flex; justify-content:center; gap:20px; margin-top:10px;">
+        <span style="font-size:60px; animation:coinPulse 1s ease-in-out infinite; display:inline-block;">🪙</span>
+        <span style="font-size:60px; animation:coinPulse 1s ease-in-out infinite 0.3s; display:inline-block;">🪙</span>
+        <span style="font-size:60px; animation:coinPulse 1s ease-in-out infinite 0.6s; display:inline-block;">🪙</span>
+      </div>
+      <div style="font-family:'Fredoka One',cursive; font-size:30px; color:#FFD700; margin-top:10px;">
+        ¡Cada misión = Un giro extra!
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div style="position:absolute; bottom:60px; left:60px; right:60px; display:flex; justify-content:space-between; align-items:center;">
+    <div onclick="prevScene()" style="font-family:'Fredoka One',cursive; font-size:28px; color:rgba(255,215,0,0.6); cursor:pointer;">← Volver</div>
+    <div style="font-family:'Fredoka One',cursive; font-size:24px; color:rgba(255,255,255,0.5);">Paso 2 de 4</div>
+    <div onclick="nextScene()" class="btn-green" style="font-size:32px; padding:18px 35px;">Siguiente →</div>
+  </div>
+</div>
+
+
+<!-- ==================== SCENE 3: STEP 3 - SPIN ==================== -->
+<div class="scene bg-dark-gold" id="scene-3">
+  <div class="stars"></div>
+
+  <div style="position:absolute; top:0; left:0; right:0; height:6px; background:linear-gradient(to right,#FFD700,#FF6B35,#FFD700);"></div>
+
+  <!-- Logo top -->
+  <div style="position:absolute; top:50px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:15px;">
+    <div style="font-family:'Bangers',cursive; font-size:42px; color:#FFD700; text-shadow:2px 2px 0 #C0392B;">🍞 EL AREPERO</div>
+  </div>
+
+  <!-- Step indicator -->
+  <div style="position:absolute; top:140px; left:60px; right:60px; display:flex; align-items:center; gap:20px;" class="animate-left">
+    <div class="step-circle">3</div>
+    <div>
+      <div style="font-family:'Bangers',cursive; font-size:52px; color:#FFD700; line-height:1;">¡GIRA Y GANA!</div>
+      <div style="font-family:'Fredoka One',cursive; font-size:28px; color:#fff; opacity:0.9;">Presiona el botón y espera tu premio</div>
+    </div>
+  </div>
+
+  <!-- ROULETTE -->
+  <div style="position:absolute; top:300px; left:50%; transform:translateX(-50%);" class="animate-zoom delay-1">
+    <div class="roulette-outer" style="width:580px; height:580px;">
+      <div class="roulette-pointer"></div>
+      <div class="roulette-inner" style="width:540px; height:540px;" id="roulette-wheel">
+        <!-- SVG Roulette -->
+        <svg width="540" height="540" viewBox="0 0 540 540" id="roulette-svg">
+          <defs>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+
+          <!-- Segments - 8 segments (45° each) -->
+          <!-- Segment 1: Arepa Gratis (green) - 0-45° -->
+          <path d="M270 270 L270 0 A270 270 0 0 1 461 78 Z" fill="#1B5E20"/>
+          <!-- Segment 2: 2+1 Arepas (red) - 45-90° -->
+          <path d="M270 270 L461 78 A270 270 0 0 1 540 270 Z" fill="#C0392B"/>
+          <!-- Segment 3: Arepa Gratis (green) - 90-135° -->
+          <path d="M270 270 L540 270 A270 270 0 0 1 461 462 Z" fill="#1B5E20"/>
+          <!-- Segment 4: 20% OFF (yellow) - 135-180° -->
+          <path d="M270 270 L461 462 A270 270 0 0 1 270 540 Z" fill="#F39C12"/>
+          <!-- Segment 5: 2+1 Arepas (red) - 180-225° -->
+          <path d="M270 270 L270 540 A270 270 0 0 1 78 462 Z" fill="#C0392B"/>
+          <!-- Segment 6: Combo VIP (dark green) - 225-270° -->
+          <path d="M270 270 L78 462 A270 270 0 0 1 0 270 Z" fill="#27AE60"/>
+          <!-- Segment 7: Queso Extra (red) - 270-315° -->
+          <path d="M270 270 L0 270 A270 270 0 0 1 78 78 Z" fill="#C0392B"/>
+          <!-- Segment 8: Arepa Gratis (green) - 315-360° -->
+          <path d="M270 270 L78 78 A270 270 0 0 1 270 0 Z" fill="#1B5E20"/>
+
+          <!-- Segment dividers gold -->
+          <line x1="270" y1="270" x2="270" y2="0" stroke="#FFD700" stroke-width="4"/>
+          <line x1="270" y1="270" x2="461" y2="78" stroke="#FFD700" stroke-width="4"/>
+          <line x1="270" y1="270" x2="540" y2="270" stroke="#FFD700" stroke-width="4"/>
+          <line x1="270" y1="270" x2="461" y2="462" stroke="#FFD700" stroke-width="4"/>
+          <line x1="270" y1="270" x2="270" y2="540" stroke="#FFD700" stroke-width="4"/>
+          <line x1="270" y1="270" x2="78" y2="462" stroke="#FFD700" stroke-width="4"/>
+          <line x1="270" y1="270" x2="0" y2="270" stroke="#FFD700" stroke-width="4"/>
+          <line x1="270" y1="270" x2="78" y2="78" stroke="#FFD700" stroke-width="4"/>
+
+          <!-- Outer ring -->
+          <circle cx="270" cy="270" r="268" fill="none" stroke="#FFD700" stroke-width="6"/>
+
+          <!-- Lights on border -->
+          <circle cx="270" cy="10" r="10" fill="#FFD700" filter="url(#glow)"/>
+          <circle cx="461" cy="87" r="10" fill="#fff" filter="url(#glow)"/>
+          <circle cx="530" cy="270" r="10" fill="#FFD700" filter="url(#glow)"/>
+          <circle cx="461" cy="453" r="10" fill="#fff" filter="url(#glow)"/>
+          <circle cx="270" cy="530" r="10" fill="#FFD700" filter="url(#glow)"/>
+          <circle cx="79" cy="453" r="10" fill="#fff" filter="url(#glow)"/>
+          <circle cx="10" cy="270" r="10" fill="#FFD700" filter="url(#glow)"/>
+          <circle cx="79" cy="87" r="10" fill="#fff" filter="url(#glow)"/>
+
+          <!-- Labels -->
+          <g transform="rotate(22.5 270 270)">
+            <text x="270" y="105" text-anchor="middle" font-family="Fredoka One,cursive" font-size="26" fill="#fff" font-weight="900">Arepa</text>
+            <text x="270" y="133" text-anchor="middle" font-family="Fredoka One,cursive" font-size="26" fill="#FFD700" font-weight="900">GRATIS</text>
+          </g>
+          <g transform="rotate(67.5 270 270)">
+            <text x="270" y="105" text-anchor="middle" font-family="Fredoka One,cursive" font-size="24" fill="#FFD700" font-weight="900">2+1</text>
+            <text x="270" y="130" text-anchor="middle" font-family="Fredoka One,cursive" font-size="20" fill="#fff" font-weight="900">Arepas</text>
+          </g>
+          <g transform="rotate(112.5 270 270)">
+            <text x="270" y="105" text-anchor="middle" font-family="Fredoka One,cursive" font-size="26" fill="#fff" font-weight="900">Arepa</text>
+            <text x="270" y="133" text-anchor="middle" font-family="Fredoka One,cursive" font-size="26" fill="#FFD700" font-weight="900">GRATIS</text>
+          </g>
+          <g transform="rotate(157.5 270 270)">
+            <text x="270" y="105" text-anchor="middle" font-family="Fredoka One,cursive" font-size="26" fill="#1B0000" font-weight="900">20%</text>
+            <text x="270" y="133" text-anchor="middle" font-family="Fredoka One,cursive" font-size="22" fill="#1B0000" font-weight="900">OFF</text>
+          </g>
+          <g transform="rotate(202.5 270 270)">
+            <text x="270" y="105" text-anchor="middle" font-family="Fredoka One,cursive" font-size="24" fill="#FFD700" font-weight="900">2+1</text>
+            <text x="270" y="130" text-anchor="middle" font-family="Fredoka One,cursive" font-size="20" fill="#fff" font-weight="900">Arepas</text>
+          </g>
+          <g transform="rotate(247.5 270 270)">
+            <text x="270" y="105" text-anchor="middle" font-family="Fredoka One,cursive" font-size="23" fill="#fff" font-weight="900">Combo</text>
+            <text x="270" y="130" text-anchor="middle" font-family="Fredoka One,cursive" font-size="22" fill="#FFD700" font-weight="900">VIP</text>
+          </g>
+          <g transform="rotate(292.5 270 270)">
+            <text x="270" y="105" text-anchor="middle" font-family="Fredoka One,cursive" font-size="22" fill="#FFD700" font-weight="900">Queso</text>
+            <text x="270" y="130" text-anchor="middle" font-family="Fredoka One,cursive" font-size="22" fill="#fff" font-weight="900">Extra</text>
+          </g>
+          <g transform="rotate(337.5 270 270)">
+            <text x="270" y="105" text-anchor="middle" font-family="Fredoka One,cursive" font-size="26" fill="#fff" font-weight="900">Arepa</text>
+            <text x="270" y="133" text-anchor="middle" font-family="Fredoka One,cursive" font-size="26" fill="#FFD700" font-weight="900">GRATIS</text>
+          </g>
+
+          <!-- Center -->
+          <circle cx="270" cy="270" r="70" fill="url(#centerGrad)" stroke="#fff" stroke-width="5"/>
+          <defs>
+            <radialGradient id="centerGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#FFD700"/>
+              <stop offset="100%" stop-color="#B8860B"/>
+            </radialGradient>
+          </defs>
+          <text x="270" y="260" text-anchor="middle" font-family="Bangers,cursive" font-size="26" fill="#1B0000">¡GIRA</text>
+          <text x="270" y="285" text-anchor="middle" font-family="Bangers,cursive" font-size="22" fill="#1B0000">Y GANA!</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPIN BUTTON -->
+  <div style="position:absolute; top:920px; left:50%; transform:translateX(-50%); text-align:center;" class="animate-fadeup delay-2">
+    <div class="btn-play" id="spin-btn" onclick="spinRoulette()" style="font-size:44px; padding:25px 70px;">
+      🎰 ¡TIRA LA RULETA!
+    </div>
+  </div>
+
+  <!-- Missions reminder -->
+  <div style="position:absolute; top:1060px; left:60px; right:60px; text-align:center;" class="animate-fadeup delay-3">
+    <div style="font-family:'Fredoka One',cursive; font-size:32px; color:#FFD700; text-align:center;">
+      Completa misiones, gira y<br><span style="font-family:'Bangers',cursive; font-size:50px; color:#fff;">gana premios REALES</span> 🎁
+    </div>
+  </div>
+
+  <!-- Info boxes -->
+  <div style="position:absolute; top:1200px; left:60px; right:60px; display:flex; gap:20px;" class="animate-fadeup delay-3">
+    <div style="flex:1; background:rgba(255,215,0,0.15); border:2px solid rgba(255,215,0,0.4); border-radius:20px; padding:25px; text-align:center;">
+      <div style="font-size:40px;">📍</div>
+      <div style="font-family:'Fredoka One',cursive; font-size:22px; color:#FFD700;">Plaza Uvero Alto</div>
+      <div style="font-family:'Fredoka One',cursive; font-size:18px; color:#fff; opacity:0.8;">Frente a hoteles</div>
+    </div>
+    <div style="flex:1; background:rgba(255,215,0,0.15); border:2px solid rgba(255,215,0,0.4); border-radius:20px; padding:25px; text-align:center;">
+      <div style="font-size:40px;">💰</div>
+      <div style="font-family:'Fredoka One',cursive; font-size:22px; color:#FFD700;">Desde RD$140</div>
+      <div style="font-family:'Fredoka One',cursive; font-size:18px; color:#fff; opacity:0.8;">Delivery gratis</div>
+    </div>
+    <div style="flex:1; background:rgba(255,215,0,0.15); border:2px solid rgba(255,215,0,0.4); border-radius:20px; padding:25px; text-align:center;">
+      <div style="font-size:40px;">🕐</div>
+      <div style="font-family:'Fredoka One',cursive; font-size:22px; color:#FFD700;">Abierto 24/7</div>
+      <div style="font-family:'Fredoka One',cursive; font-size:18px; color:#fff; opacity:0.8;">Siempre disponible</div>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div style="position:absolute; bottom:60px; left:60px; right:60px; display:flex; justify-content:space-between; align-items:center;">
+    <div onclick="prevScene()" style="font-family:'Fredoka One',cursive; font-size:28px; color:rgba(255,215,0,0.6); cursor:pointer;">← Volver</div>
+    <div style="font-family:'Fredoka One',cursive; font-size:24px; color:rgba(255,255,255,0.5);">Paso 3 de 4</div>
+    <div onclick="nextScene()" class="btn-green" style="font-size:32px; padding:18px 35px;">Siguiente →</div>
+  </div>
+</div>
+
+
+<!-- ==================== SCENE 4: WINNER + CTA ==================== -->
+<div class="scene bg-sunset" id="scene-4">
+  <div class="stars"></div>
+
+  <div style="position:absolute; top:0; left:0; right:0; height:6px; background:linear-gradient(to right,#FFD700,#FF6B35,#FFD700);"></div>
+
+  <!-- Logo top -->
+  <div style="position:absolute; top:50px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:15px;">
+    <div style="font-family:'Bangers',cursive; font-size:42px; color:#FFD700; text-shadow:2px 2px 0 #C0392B;">🍞 EL AREPERO</div>
+  </div>
+
+  <!-- Step indicator -->
+  <div style="position:absolute; top:140px; left:60px; right:60px; display:flex; align-items:center; gap:20px;" class="animate-zoom">
+    <div class="step-circle" style="background:linear-gradient(135deg,#C0392B,#E74C3C);">🏆</div>
+    <div>
+      <div style="font-family:'Bangers',cursive; font-size:52px; color:#FFD700; line-height:1;">¡CANJEÁ TU PREMIO!</div>
+      <div style="font-family:'Fredoka One',cursive; font-size:28px; color:#fff; opacity:0.9;">El 1 de Marzo en tu primera compra</div>
+    </div>
+  </div>
+
+  <!-- Winner announcement -->
+  <div style="position:absolute; top:280px; left:60px; right:60px;" class="animate-zoom delay-1">
+    <div class="winner-banner">🎉 ¡GANASTE! 🎉</div>
+  </div>
+
+  <!-- Arepa La Reina showcase -->
+  <div style="position:absolute; top:400px; left:50%; transform:translateX(-50%); text-align:center;" class="animate-fadeup delay-2">
+    <div style="font-family:'Bangers',cursive; font-size:70px; color:#FFD700; text-shadow:4px 4px 0 #C0392B; line-height:1;">LA REINA</div>
+    <div style="font-size:150px; animation:mascotFloat 2s ease-in-out infinite; display:block; margin:20px 0;">🫓</div>
+    <div style="font-family:'Fredoka One',cursive; font-size:28px; color:#fff; line-height:1.5; margin-top:10px;">
+      Cerdo Asado • Queso de Mano<br>
+      Aguacate • Plátano Maduro<br>
+      <span style="color:#FFD700; font-family:'Bangers',cursive; font-size:44px;">¡La favorita de Uvero Alto!</span>
+    </div>
+  </div>
+
+  <!-- Confetti burst -->
+  <div style="position:absolute; top:550px; left:0; right:0; pointer-events:none;">
+    <div class="confetti-piece" style="left:10%; background:#FFD700; animation-duration:2.5s; animation-delay:0s; border-radius:50%;"></div>
+    <div class="confetti-piece" style="left:25%; background:#C0392B; animation-duration:3s; animation-delay:0.3s;"></div>
+    <div class="confetti-piece" style="left:40%; background:#1B5E20; animation-duration:2s; animation-delay:0.7s; border-radius:50%;"></div>
+    <div class="confetti-piece" style="left:55%; background:#FFD700; animation-duration:2.8s; animation-delay:0.2s;"></div>
+    <div class="confetti-piece" style="left:70%; background:#E74C3C; animation-duration:2.2s; animation-delay:0.5s; border-radius:50%;"></div>
+    <div class="confetti-piece" style="left:85%; background:#F39C12; animation-duration:3.2s; animation-delay:0.1s;"></div>
+  </div>
+
+  <!-- How to redeem -->
+  <div style="position:absolute; top:1280px; left:60px; right:60px; display:flex; flex-direction:column; gap:20px;" class="animate-fadeup delay-3">
+    <div style="font-family:'Bangers',cursive; font-size:46px; color:#FFD700; text-align:center; text-shadow:2px 2px 0 #C0392B;">¿CÓMO CANJEAR?</div>
+    <div class="instruction-card">
+      <div class="instruction-emoji">📱</div>
+      <div class="instruction-text">Guarda tu premio en la web</div>
+    </div>
+    <div class="instruction-card">
+      <div class="instruction-emoji">🗓️</div>
+      <div class="instruction-text">Preséntalo el <strong style="color:#FFD700;">30 de Marzo</strong> en Plaza Uvero Alto</div>
+    </div>
+    <div class="instruction-card">
+      <div class="instruction-emoji">🎁</div>
+      <div class="instruction-text">¡Disfruta tu premio <strong style="color:#FFD700;">GRATIS</strong>!</div>
+    </div>
+  </div>
+
+  <!-- CTA Final -->
+  <div style="position:absolute; top:1660px; left:60px; right:60px; text-align:center;" class="animate-zoom delay-4">
+    <div class="btn-play" style="font-size:44px; padding:30px 50px; width:100%;" onclick="goToWebsite()">
+      🎰 ¡JUGAR AHORA EN ELAREPERO.COM!
+    </div>
+    <div style="font-family:'Fredoka One',cursive; font-size:28px; color:#FFD700; margin-top:20px;">
+      📞 +1 829 640-3859 · WhatsApp
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div style="position:absolute; bottom:60px; left:60px; right:60px; display:flex; justify-content:space-between; align-items:center;">
+    <div onclick="prevScene()" style="font-family:'Fredoka One',cursive; font-size:28px; color:rgba(255,215,0,0.6); cursor:pointer;">← Volver</div>
+    <div style="font-family:'Fredoka One',cursive; font-size:24px; color:rgba(255,255,255,0.5);">Paso 4 de 4 ✅</div>
+    <div onclick="goToStart()" style="font-family:'Fredoka One',cursive; font-size:26px; color:rgba(255,215,0,0.7); cursor:pointer;">Reiniciar 🔄</div>
+  </div>
+</div>
+
+
+<!-- Progress + Navigation dots -->
+<div class="progress-bar-container">
+  <div class="progress-bar-fill" id="progress-bar" style="width:20%;"></div>
+</div>
+
+<div class="scene-nav">
+  <div class="nav-dot active" id="dot-0" onclick="goToScene(0)"></div>
+  <div class="nav-dot" id="dot-1" onclick="goToScene(1)"></div>
+  <div class="nav-dot" id="dot-2" onclick="goToScene(2)"></div>
+  <div class="nav-dot" id="dot-3" onclick="goToScene(3)"></div>
+  <div class="nav-dot" id="dot-4" onclick="goToScene(4)"></div>
+</div>
+
+
+<script>
+  let currentScene = 0;
+  const totalScenes = 5;
+  let rouletteSpun = false;
+
+  function goToScene(n) {
+    document.querySelector('.scene.active').classList.remove('active');
+    document.getElementById('scene-' + n).classList.add('active');
+    currentScene = n;
+    updateNav();
+  }
+
+  function nextScene() {
+    if (currentScene < totalScenes - 1) {
+      goToScene(currentScene + 1);
+    }
+  }
+
+  function prevScene() {
+    if (currentScene > 0) {
+      goToScene(currentScene - 1);
+    }
+  }
+
+  function goToStart() {
+    goToScene(0);
+  }
+
+  function updateNav() {
+    for (let i = 0; i < totalScenes; i++) {
+      const dot = document.getElementById('dot-' + i);
+      if (dot) {
+        dot.classList.toggle('active', i === currentScene);
+      }
+    }
+    const pct = ((currentScene + 1) / totalScenes) * 100;
+    document.getElementById('progress-bar').style.width = pct + '%';
+  }
+
+  function spinRoulette() {
+    if (rouletteSpun) {
+      nextScene();
+      return;
+    }
+    const svg = document.getElementById('roulette-svg');
+    svg.style.transition = 'transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    const randomDeg = 1440 + Math.floor(Math.random() * 360);
+    svg.style.transform = 'rotate(' + randomDeg + 'deg)';
+    rouletteSpun = true;
+
+    const btn = document.getElementById('spin-btn');
+    btn.innerHTML = '⌛ Girando...';
+    btn.style.opacity = '0.7';
+
+    setTimeout(() => {
+      btn.innerHTML = '🏆 ¡VER MI PREMIO!';
+      btn.style.opacity = '1';
+      btn.onclick = nextScene;
+    }, 3500);
+  }
+
+  function goToWebsite() {
+    window.open('https://elarepero.com', '_blank');
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') nextScene();
+    if (e.key === 'ArrowLeft') prevScene();
+  });
+
+  // Touch/swipe
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (dx < -80) nextScene();
+    if (dx > 80) prevScene();
+  });
+</script>
+
+</body>
+</html>
