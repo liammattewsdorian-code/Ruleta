@@ -2,8 +2,35 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1080, height=1920">
-<title>El Arepero - Ruleta Tutorial</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🎰 El Arepero - ¡Gira la Ruleta y Gana Premios!</title>
+
+<!-- SEO -->
+<meta name="description" content="¡Juega la Ruleta de El Arepero y gana premios increíbles! Arepa gratis, descuentos, combos VIP. Arepas venezolanas en Uvero Alto, R.D. Delivery 24/7.">
+<meta name="keywords" content="El Arepero, arepas venezolanas, Uvero Alto, República Dominicana, delivery, ruleta, premios, ganar, gratis">
+<meta name="author" content="El Arepero">
+<meta name="robots" content="index, follow">
+
+<!-- Open Graph (Facebook, WhatsApp, Instagram) -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://liammattewsdorian-code.github.io/ruleta/">
+<meta property="og:title" content="🎰 El Arepero – ¡Gira y Gana Premios!">
+<meta property="og:description" content="¡Juega nuestra ruleta y gana arepa gratis, 2x1, 20% descuento o combo VIP! Delivery 24/7 en Uvero Alto. 🍞">
+<meta property="og:image" content="https://liammattewsdorian-code.github.io/ruleta/preview.png">
+<meta property="og:locale" content="es_DO">
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="🎰 El Arepero – ¡Gira y Gana Premios!">
+<meta name="twitter:description" content="¡Juega nuestra ruleta y gana arepa gratis, 2x1, 20% descuento o combo VIP! Delivery 24/7 en Uvero Alto.">
+<meta name="twitter:image" content="https://liammattewsdorian-code.github.io/ruleta/preview.png">
+
+<!-- Canonical -->
+<link rel="canonical" href="https://liammattewsdorian-code.github.io/ruleta/">
+
+<!-- Google AdSense — reemplaza ca-pub-XXXXXXXXXXXXXXXX con tu Publisher ID -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -605,6 +632,49 @@
   .nav-dot.active {
     background: #FFD700;
     box-shadow: 0 0 10px rgba(255,215,0,0.8);
+  }
+
+  /* ===================== RESPONSIVE / WEB ===================== */
+  html {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+  }
+  body {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform-origin: top left;
+  }
+
+  #powered-by {
+    position: fixed;
+    bottom: 12px;
+    right: 12px;
+    z-index: 99999;
+    background: rgba(0,0,0,0.75);
+    border: 1px solid rgba(255,215,0,0.5);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    color: #FFD700;
+    backdrop-filter: blur(6px);
+    white-space: nowrap;
+  }
+  #powered-by a { color: #FFD700; text-decoration: none; font-weight: 900; }
+  #powered-by a:hover { text-decoration: underline; }
+
+  #adsense-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9990;
+    background: rgba(0,0,0,0.9);
+    text-align: center;
+    padding: 4px 0;
   }
 </style>
 </head>
@@ -1269,7 +1339,29 @@
     if (dx < -80) nextScene();
     if (dx > 80) prevScene();
   });
+
+  // ===================== RESPONSIVE SCALING =====================
+  function fitScreen() {
+    const scaleX = window.innerWidth / 1080;
+    const scaleY = window.innerHeight / 1920;
+    const scale = Math.min(scaleX, scaleY);
+    document.body.style.transform = 'translateX(-50%) scale(' + scale + ')';
+  }
+  fitScreen();
+  window.addEventListener('resize', fitScreen);
 </script>
+
+<!-- Creator badge — edita con tu nombre/contacto para conseguir más clientes -->
+<div id="powered-by">⚡ Creado por <a href="mailto:tucorreo@email.com" target="_blank">TuNombre.dev</a></div>
+
+<!-- Google AdSense Banner — reemplaza ca-pub-XXXXXXXXXXXXXXXX y el data-ad-slot con tus valores reales -->
+<div id="adsense-banner">
+  <ins class="adsbygoogle"
+       style="display:inline-block;width:728px;height:90px;max-width:100%"
+       data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+       data-ad-slot="XXXXXXXXXX"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
 
 </body>
 </html>
