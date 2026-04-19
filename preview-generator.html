@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1200, height=630">
+<title>Preview Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px;
+    height: 630px;
+    overflow: hidden;
+    font-family: 'Fredoka One', cursive;
+    background: radial-gradient(ellipse at 50% 30%, #FF6B35 0%, #C0392B 30%, #7B1D1D 55%, #2C0A0A 80%, #0D0208 100%);
+    position: relative;
+  }
+
+  .stars {
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1.5px 1.5px at 5%  8%, rgba(255,215,0,0.9) 0%, transparent 100%),
+      radial-gradient(2px   2px   at 15% 5%, rgba(255,255,255,0.8) 0%, transparent 100%),
+      radial-gradient(1px   1px   at 28% 12%, rgba(255,200,0,0.7) 0%, transparent 100%),
+      radial-gradient(2px   2px   at 42%  4%, rgba(255,255,255,0.9) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 58% 9%,  rgba(255,215,0,0.8) 0%, transparent 100%),
+      radial-gradient(1px   1px   at 70% 6%,  rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(2px   2px   at 82% 11%, rgba(255,215,0,0.9) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 92% 4%,  rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px   1px   at 10% 20%, rgba(255,200,100,0.5) 0%, transparent 100%),
+      radial-gradient(1px   1px   at 95% 18%, rgba(255,215,0,0.7) 0%, transparent 100%);
+  }
+
+  /* Gold top/bottom bar */
+  .bar-top {
+    position: absolute; top: 0; left: 0; right: 0; height: 8px;
+    background: linear-gradient(to right, #FFD700, #FF6B35, #FFD700, #FF6B35, #FFD700);
+  }
+  .bar-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 8px;
+    background: linear-gradient(to right, #FFD700, #FF6B35, #FFD700, #FF6B35, #FFD700);
+  }
+
+  /* Left side — logo & info */
+  .left {
+    position: absolute;
+    left: 70px; top: 0; bottom: 0;
+    width: 540px;
+    display: flex; flex-direction: column; justify-content: center; gap: 18px;
+  }
+
+  .logo-row {
+    display: flex; align-items: center; gap: 22px;
+  }
+  .logo-circle {
+    width: 110px; height: 110px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    border-radius: 50%;
+    border: 5px solid #fff;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 40px rgba(255,215,0,0.9);
+    flex-shrink: 0;
+  }
+  .brand-name {
+    font-family: 'Bangers', cursive;
+    font-size: 82px;
+    color: #fff;
+    line-height: 1;
+    text-shadow: 4px 4px 0 #C0392B, 0 0 30px rgba(255,107,53,0.6);
+    letter-spacing: 2px;
+  }
+  .brand-sub {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    color: #FFD700;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+  }
+
+  .headline {
+    font-family: 'Bangers', cursive;
+    font-size: 68px;
+    line-height: 1.05;
+    color: #FFD700;
+    text-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+  }
+  .headline span { color: #fff; }
+
+  .pills {
+    display: flex; gap: 14px; flex-wrap: wrap;
+  }
+  .pill {
+    background: rgba(255,215,0,0.15);
+    border: 2px solid rgba(255,215,0,0.6);
+    border-radius: 30px;
+    padding: 8px 20px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px;
+    color: #FFD700;
+  }
+
+  .cta {
+    display: inline-block;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #1a0a00;
+    font-family: 'Bangers', cursive;
+    font-size: 32px;
+    letter-spacing: 2px;
+    padding: 14px 36px;
+    border-radius: 50px;
+    box-shadow: 0 8px 30px rgba(255,165,0,0.6);
+    width: fit-content;
+  }
+
+  /* Right side — roulette */
+  .right {
+    position: absolute;
+    right: 50px; top: 0; bottom: 0;
+    width: 460px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .roulette-wrap {
+    position: relative;
+    width: 400px; height: 400px;
+  }
+  .roulette-outer {
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #B8860B, #FFD700, #B8860B, #FFD700);
+    box-shadow: 0 0 80px rgba(255,215,0,0.8), 0 0 160px rgba(255,165,0,0.4);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .roulette-inner {
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+  }
+  .roulette-pointer {
+    position: absolute;
+    top: -22px; left: 50%; transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 16px solid transparent;
+    border-right: 16px solid transparent;
+    border-top: 44px solid #FF0000;
+    filter: drop-shadow(0 4px 8px rgba(255,0,0,0.8));
+    z-index: 10;
+  }
+  .roulette-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px; height: 60px;
+    background: radial-gradient(circle, #FFD700, #B8860B);
+    border-radius: 50%;
+    border: 4px solid #fff;
+    box-shadow: 0 0 20px rgba(255,215,0,0.8);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; z-index: 10;
+  }
+
+  /* Palm */
+  .palm-left {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 80px;
+  }
+  .palm-right {
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 80px;
+  }
+
+  .delivery-badge {
+    position: absolute;
+    top: 24px; right: 80px;
+    background: rgba(0,0,0,0.6);
+    border: 3px solid #FFD700;
+    border-radius: 50%;
+    width: 110px; height: 110px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(6px);
+  }
+  .delivery-badge .stars-row { color: #FFD700; font-size: 16px; letter-spacing: 1px; }
+  .delivery-badge .num { font-family: 'Bangers'; font-size: 38px; color: #FFD700; line-height: 1; }
+  .delivery-badge .lbl { font-size: 11px; color: #FFD700; font-family: 'Nunito'; font-weight: 900; letter-spacing: 2px; }
+</style>
+</head>
+<body>
+  <div class="stars"></div>
+  <div class="bar-top"></div>
+  <div class="bar-bottom"></div>
+
+  <!-- Delivery badge top-right -->
+  <div class="delivery-badge">
+    <div class="stars-row">★★★★★</div>
+    <div class="num">5.0</div>
+    <div class="lbl">GOOGLE</div>
+  </div>
+
+  <!-- LEFT -->
+  <div class="left">
+    <div class="logo-row">
+      <div class="logo-circle">
+        <svg width="90" height="90" viewBox="0 0 100 100">
+          <ellipse cx="50" cy="55" rx="42" ry="30" fill="#D4A447"/>
+          <ellipse cx="50" cy="50" rx="42" ry="30" fill="#E8B860"/>
+          <ellipse cx="50" cy="47" rx="40" ry="27" fill="#F5C878"/>
+          <ellipse cx="50" cy="43" rx="32" ry="18" fill="#8B4513"/>
+          <ellipse cx="42" cy="41" rx="8" ry="5" fill="#90EE90"/>
+          <ellipse cx="56" cy="40" rx="6" ry="4" fill="#90EE90"/>
+          <circle cx="38" cy="36" r="6" fill="#fff"/>
+          <circle cx="62" cy="36" r="6" fill="#fff"/>
+          <circle cx="39" cy="37" r="3.5" fill="#1a1a1a"/>
+          <circle cx="63" cy="37" r="3.5" fill="#1a1a1a"/>
+          <circle cx="40" cy="36" r="1.5" fill="#fff"/>
+          <circle cx="64" cy="36" r="1.5" fill="#fff"/>
+          <path d="M40 44 Q50 50 60 44" stroke="#4a2c00" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M40 44 Q35 48 32 44" stroke="#4a2c00" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M60 44 Q65 48 68 44" stroke="#4a2c00" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">El Arepero</div>
+        <div class="brand-sub">Arepas Venezolanas</div>
+      </div>
+    </div>
+
+    <div class="headline">🎰 ¡GIRA Y<br><span>GANA PREMIOS!</span></div>
+
+    <div class="pills">
+      <div class="pill">🍞 Arepa Gratis</div>
+      <div class="pill">2×1 Arepas</div>
+      <div class="pill">20% OFF</div>
+      <div class="pill">🏆 Combo VIP</div>
+    </div>
+
+    <div class="cta">🛵 Delivery 24/7 · Uvero Alto</div>
+  </div>
+
+  <!-- RIGHT — Roulette -->
+  <div class="right">
+    <div class="roulette-wrap">
+      <div class="roulette-outer">
+        <div class="roulette-inner">
+          <div class="roulette-pointer"></div>
+          <svg width="360" height="360" viewBox="0 0 360 360">
+            <defs>
+              <clipPath id="circle-clip"><circle cx="180" cy="180" r="180"/></clipPath>
+            </defs>
+            <g clip-path="url(#circle-clip)">
+              <!-- 8 segments -->
+              <path d="M180,180 L180,0 A180,180 0 0,1 307.3,90 Z" fill="#C0392B"/>
+              <path d="M180,180 L307.3,90 A180,180 0 0,1 360,180 Z" fill="#FFD700"/>
+              <path d="M180,180 L360,180 A180,180 0 0,1 307.3,270 Z" fill="#1B5E20"/>
+              <path d="M180,180 L307.3,270 A180,180 0 0,1 180,360 Z" fill="#E74C3C"/>
+              <path d="M180,180 L180,360 A180,180 0 0,1 52.7,270 Z" fill="#B8860B"/>
+              <path d="M180,180 L52.7,270 A180,180 0 0,1 0,180 Z" fill="#2E7D32"/>
+              <path d="M180,180 L0,180 A180,180 0 0,1 52.7,90 Z" fill="#E74C3C"/>
+              <path d="M180,180 L52.7,90 A180,180 0 0,1 180,0 Z" fill="#FFD700"/>
+              <!-- Segment lines -->
+              <line x1="180" y1="180" x2="180" y2="0"       stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+              <line x1="180" y1="180" x2="307.3" y2="90"    stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+              <line x1="180" y1="180" x2="360" y2="180"     stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+              <line x1="180" y1="180" x2="307.3" y2="270"   stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+              <line x1="180" y1="180" x2="180" y2="360"     stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+              <line x1="180" y1="180" x2="52.7" y2="270"    stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+              <line x1="180" y1="180" x2="0" y2="180"       stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+              <line x1="180" y1="180" x2="52.7" y2="90"     stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+              <!-- Prize text -->
+              <text transform="rotate(22.5,180,180) translate(180,180)" text-anchor="middle" font-family="Fredoka One,cursive" font-size="18" fill="#fff" font-weight="bold" dy="-110">🍞 GRATIS</text>
+              <text transform="rotate(67.5,180,180) translate(180,180)" text-anchor="middle" font-family="Fredoka One,cursive" font-size="18" fill="#1a0a00" font-weight="bold" dy="-110">2×1</text>
+              <text transform="rotate(112.5,180,180) translate(180,180)" text-anchor="middle" font-family="Fredoka One,cursive" font-size="18" fill="#fff" font-weight="bold" dy="-110">20% OFF</text>
+              <text transform="rotate(157.5,180,180) translate(180,180)" text-anchor="middle" font-family="Fredoka One,cursive" font-size="18" fill="#fff" font-weight="bold" dy="-110">🏆 VIP</text>
+              <text transform="rotate(202.5,180,180) translate(180,180)" text-anchor="middle" font-family="Fredoka One,cursive" font-size="18" fill="#1a0a00" font-weight="bold" dy="-110">QUESO+</text>
+              <text transform="rotate(247.5,180,180) translate(180,180)" text-anchor="middle" font-family="Fredoka One,cursive" font-size="18" fill="#fff" font-weight="bold" dy="-110">2×1</text>
+              <text transform="rotate(292.5,180,180) translate(180,180)" text-anchor="middle" font-family="Fredoka One,cursive" font-size="18" fill="#fff" font-weight="bold" dy="-110">10% OFF</text>
+              <text transform="rotate(337.5,180,180) translate(180,180)" text-anchor="middle" font-family="Fredoka One,cursive" font-size="18" fill="#1a0a00" font-weight="bold" dy="-110">🍞 GRATIS</text>
+            </g>
+            <!-- Border ring -->
+            <circle cx="180" cy="180" r="178" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="4"/>
+          </svg>
+          <div class="roulette-center">🎰</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
